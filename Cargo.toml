@@ -1,0 +1,51 @@
+[package]
+name = "e-shoot"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+
+[[bin]]
+name = "e-shoot"
+path = "src/main.rs"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# CLI
+clap = { version = "4", features = ["derive", "env"] }
+
+# Config
+toml = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+
+# Scheduling
+tokio-cron-scheduler = "0.13"
+
+# Database
+sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "macros", "chrono", "uuid"] }
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+
+# Utilities
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+dirs = "5"
+indicatif = "0.17"
+async-trait = "0.1"
+dialoguer = { version = "0.11", features = ["fuzzy-select"] }
+console = "0.15"
+
+[dev-dependencies]
+tokio-test = "0.4"
+mockito = "1"

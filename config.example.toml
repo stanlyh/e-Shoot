@@ -1,0 +1,73 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# e-shoot — example configuration
+# Copy this file to ~/.config/e-shoot/config.toml and fill in your values.
+# The API token can also be set via the E_SHOOT_API_TOKEN environment variable.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[api]
+base_url        = "https://graph.facebook.com/v19.0"
+token           = "EAAxxxxxxxxxxxxx"   # or use E_SHOOT_API_TOKEN env var
+phone_number_id = "1234567890"
+connect_timeout_secs = 5
+request_timeout_secs = 30
+max_retries          = 3
+retry_backoff_secs   = 2
+
+[logging]
+level  = "info"    # trace | debug | info | warn | error
+format = "pretty"  # pretty (human) | json (structured)
+# file = "/var/log/e-shoot/app.log"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Recipient groups — reusable lists of phone numbers (E.164 format)
+# ─────────────────────────────────────────────────────────────────────────────
+[[recipients]]
+name    = "lista_promo"
+numbers = [
+    "+573001234567",
+    "+573009876543",
+]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Template definitions — must match templates approved in WhatsApp Business
+# Variables use {{1}}, {{2}}, ... positional notation
+# ─────────────────────────────────────────────────────────────────────────────
+[[templates]]
+name     = "promo_verano"
+language = "es"
+
+[[templates.components]]
+type = "body"
+[[templates.components.parameters]]
+type  = "text"
+value = "Hola {{1}}, tienes {{2}}% de descuento hasta el {{3}}."
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Jobs — each job ties a schedule to a template and recipient group
+# Cron format: sec min hour day-of-month month day-of-week  (6 fields)
+# ─────────────────────────────────────────────────────────────────────────────
+[[jobs]]
+id          = "promo-lunes"
+enabled     = true
+description = "Blast promocional cada lunes a las 9am UTC"
+schedule    = "0 0 9 * * MON"
+template    = "promo_verano"
+recipients  = "lista_promo"
+
+# Per-recipient variable substitution: phone -> [var1, var2, ...]
+[jobs.variables]
+"+573001234567" = ["Eduardo", "20", "domingo"]
+"+573009876543" = ["Ana",     "15", "sábado"]
+
+# One-shot job example
+[[jobs]]
+id            = "bienvenida-especial"
+enabled       = true
+description   = "Envío único en fecha específica"
+schedule_once = "2026-06-01T10:00:00Z"
+template      = "promo_verano"
+recipients    = "lista_promo"
+
+[jobs.variables]
+"+573001234567" = ["Eduardo", "30", "lunes"]
+"+573009876543" = ["Ana",     "30", "lunes"]
